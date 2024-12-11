@@ -258,7 +258,12 @@ export default class MVTLayer<
     const xOffset = (WORLD_SIZE * x) / worldScale;
     const yOffset = WORLD_SIZE * (1 - y / worldScale);
 
-    const modelMatrix = new Matrix4().scale([xScale, yScale, 1]);
+    const modelMatrix =
+      props.coordinateSystem === COORDINATE_SYSTEM.CARTESIAN
+        ? new Matrix4()
+            .translate([props.tile.bbox.left, props.tile.bbox.top, 0])
+            .scale(props.tile.bbox.bottom - props.tile.bbox.top)
+        : new Matrix4().scale([xScale, yScale, 1]);
 
     props.autoHighlight = false;
 
