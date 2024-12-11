@@ -33,11 +33,13 @@ const DATA_URL = 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/ex
 const INITIAL_VIEW_STATE: GlobeViewState = {
   longitude: 0,
   latitude: 20,
-  zoom: 3,
+  zoom: 2,
+  minZoom: 1,
+  maxZoom: 3,
 };
 
 const ANIMATION_SPEED = 60;
-const TIME_WINDOW = 900; // 15 minutes
+const TIME_WINDOW = 1800; // 30 minutes
 const EARTH_RADIUS_METERS = 6370972;
 const SEC_PER_DAY = 60 * 60 * 24;
 
@@ -108,11 +110,11 @@ export default function App({data}: {data?: DailyFlights[]}) {
           getTargetPosition: d => [d.lon2, d.lat2, d.alt2],
           getSourceTimestamp: d => d.time1,
           getTargetTimestamp: d => d.time2,
-          getHeight: 0.5,
-          getWidth: 3,
+          getHeight: 0.3,
+          getWidth: 2,
           timeRange,
-          getSourceColor: [39, 244, 128],
-          getTargetColor: [44, 128, 255]
+          getSourceColor: [63, 81, 181],
+          getTargetColor: [63, 181, 173]
         })
     );
 
