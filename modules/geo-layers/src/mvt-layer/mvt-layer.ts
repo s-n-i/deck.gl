@@ -29,7 +29,7 @@ import findIndexBinary from './find-index-binary';
 
 import TileLayer, {TileLayerPickingInfo, TileLayerProps} from '../tile-layer/tile-layer';
 
-import type {Tileset2DProps, TileLoadProps, GeoBoundingBox} from '../tileset-2d/index';
+import type {Tileset2DProps, TileLoadProps, GeoBoundingBox, NonGeoBoundingBox} from '../tileset-2d/index';
 import {
   urlType,
   Tileset2D,
@@ -258,7 +258,10 @@ export default class MVTLayer<
     const xOffset = (WORLD_SIZE * x) / worldScale;
     const yOffset = WORLD_SIZE * (1 - y / worldScale);
 
-    const modelMatrix = new Matrix4().scale([xScale, yScale, 1]);
+    const bbox = props.tile.bbox as NonGeoBoundingBox;
+    const modelMatrix = new Matrix4()
+      .translate([bbox.left, bbox.top, 0])
+      .scale(bbox.bottom - bbox.top);
 
     props.autoHighlight = false;
 
