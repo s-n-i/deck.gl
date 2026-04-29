@@ -29,7 +29,12 @@ import findIndexBinary from './find-index-binary';
 
 import TileLayer, {TileLayerPickingInfo, TileLayerProps} from '../tile-layer/tile-layer';
 
-import type {Tileset2DProps, TileLoadProps, GeoBoundingBox} from '../tileset-2d/index';
+import type {
+  Tileset2DProps,
+  TileLoadProps,
+  GeoBoundingBox,
+  NonGeoBoundingBox
+} from '../tileset-2d/index';
 import {
   urlType,
   Tileset2D,
@@ -266,8 +271,16 @@ export default class MVTLayer<
     props.autoHighlight = false;
 
     if (!this.context.viewport.resolution) {
-      props.modelMatrix = modelMatrix;
-      props.coordinateOrigin = [xOffset, yOffset, 0];
+      if (this.context.viewport.isGeospatial) {
+        props.modelMatrix = modelMatrix;
+        props.coordinateOrigin = [xOffset, yOffset, 0];
+      } else {
+        const bbox = props.tile.bbox as NonGeoBoundingBox;
+        props.modelMatrix = new Matrix4()
+          .translate([bbox.left, bbox.top, 0])
+          .scale([bbox.right - bbox.left, bbox.bottom - bbox.top, 1])
+          .multiplyLeft(props.modelMatrix || Matrix4.IDENTITY);
+      }
       props.coordinateSystem = COORDINATE_SYSTEM.CARTESIAN;
       props.extensions = [...(props.extensions || []), new ClipExtension()];
     }
@@ -323,12 +336,8 @@ export default class MVTLayer<
         globalFeatureId: info.index
       }) as Feature;
     }
-    if (info.object && !this._isWGS84()) {
-      info.object = transformTileCoordsToWGS84(
-        info.object,
-        info.tile!.bbox as GeoBoundingBox, // eslint-disable-line
-        this.context.viewport
-      );
+    if (info.object && !this._isWGS84() && isGeoBoundingBox(info.tile!.bbox)) {
+      info.object = transformTileCoordsToWGS84(info.object, info.tile!.bbox, this.context.viewport);
     }
 
     return info;
