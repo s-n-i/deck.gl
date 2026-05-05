@@ -271,7 +271,10 @@ export default class MVTLayer<
     props.autoHighlight = false;
 
     if (!this.context.viewport.resolution) {
-      if (props.coordinateSystem === COORDINATE_SYSTEM.CARTESIAN) {
+      if (
+        props.coordinateSystem === COORDINATE_SYSTEM.CARTESIAN ||
+        (props.coordinateSystem === COORDINATE_SYSTEM.DEFAULT && !isGeoBoundingBox(props.tile.bbox))
+      ) {
         const bbox = props.tile.bbox as NonGeoBoundingBox;
         props.modelMatrix = new Matrix4()
           .translate([bbox.left, bbox.top, 0])
