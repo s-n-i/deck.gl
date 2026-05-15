@@ -271,11 +271,11 @@ export default class MVTLayer<
     props.autoHighlight = false;
 
     if (!this.context.viewport.resolution) {
-      if (this.context.viewport.isGeospatial) {
+      const bbox = props.tile.bbox;
+      if (isGeoBoundingBox(bbox)) {
         props.modelMatrix = modelMatrix;
         props.coordinateOrigin = [xOffset, yOffset, 0];
       } else {
-        const bbox = props.tile.bbox as NonGeoBoundingBox;
         props.modelMatrix = new Matrix4()
           .translate([bbox.left, bbox.top, 0])
           .scale([bbox.right - bbox.left, bbox.bottom - bbox.top, 1])
